@@ -1,83 +1,49 @@
 package com.example.demo.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.demo.model.User;
-import com.example.demo.service.UserService;
+import com.example.demo.entity.User;
+import com.example.demo.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users") // 所有请求都以 /users 开头
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private IUserService userService;
 
-    /**
-     * 新增用户
-     */
-    @PostMapping
-    public boolean save(@RequestBody User user) {
-        return userService.save(user);
+//    // GET /users: 获取所有用户列表
+//    @GetMapping("get")
+//    public List<User> getAllUsers() {
+//        // 调用 MyBatis-Plus 提供的方法查询所有用户
+//        // selectList(null) 中的 null 表示没有查询条件
+//        return userService.selectList(null);
+//    }
+//
+//    // GET /users/{id}: 根据ID获取单个用户信息
+//    @GetMapping("/{id}")
+//    public User getUserById(@PathVariable Long id) {
+//        return userService.selectById(id);
+//    }
+//
+//    // POST /users: 新增一个用户
+//    @PostMapping("/add")
+//    public String addUser(@RequestBody User user) {
+//        int result = userService.insert(user);
+//        return result > 0 ? "新增成功, 用户ID: " + user.getId() : "新增失败";
+//    }
+
+    @PutMapping("/put")
+    public void updateUser(@RequestBody User user) {
+        User updateUser = new User();
+        updateUser.setId(user.getId());
+        updateUser.setName("siyu");
+        updateUser.setAge(18);
+        userService.updateById(updateUser);
     }
 
-    /**
-     * 根据ID删除用户
-     */
-    @DeleteMapping("/{id}")
-    public boolean delete(@PathVariable Long id) {
-        return userService.removeById(id);
-    }
 
-    /**
-     * 更新用户
-     */
-    @PutMapping
-    public boolean update(@RequestBody User user) {
-        return userService.updateById(user);
-    }
-
-    /**
-     * 根据ID查询用户
-     */
-    @GetMapping("/{id}")
-    public User getById(@PathVariable Long id) {
-        return userService.getById(id);
-    }
-
-    /**
-     * 查询所有用户
-     */
-    @GetMapping
-    public List<User> list() {
-        return userService.list();
-    }
-
-    /**
-     * 分页查询
-     */
-    @GetMapping("/page")
-    public Page<User> page(@RequestParam(defaultValue = "1") int current,
-                          @RequestParam(defaultValue = "10") int size) {
-        return userService.page(new Page<>(current, size));
-    }
-
-    /**
-     * 条件查询
-     */
-    @GetMapping("/search")
-    public List<User> search(@RequestParam(required = false) String name,
-                           @RequestParam(required = false) Integer age) {
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
-        if (name != null) {
-            wrapper.like("name", name);
-        }
-        if (age != null) {
-            wrapper.eq("age", age);
-        }
-        return userService.list(wrapper);
-    }
 }
